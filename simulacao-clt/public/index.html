@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulação CLT</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #009FE3, #20BFA9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: white;
+    }
+
+    .form-container {
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      width: 100%;
+      max-width: 500px;
+      backdrop-filter: blur(10px);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 20px;
+      margin-bottom: 24px;
+    }
+
+    label {
+      display: block;
+      margin-top: 16px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    input[type="text"],
+    input[type="tel"] {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+
+    .radio-group {
+      margin-top: 10px;
+      display: flex;
+      gap: 20px;
+    }
+
+    button {
+      margin-top: 24px;
+      width: 100%;
+      padding: 14px;
+      background-color: #ffffff;
+      color: #009FE3;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background-color: #f0f0f0;
+    }
+
+    #mensagem-status {
+      text-align: center;
+      margin-top: 16px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h1>Simulação de Empréstimo CLT</h1>
+    <form id="meuFormulario">
+      <label>Nome</label>
+      <input type="text" name="nome" required />
+      <label>Sobrenome</label>
+      <input type="text" name="sobrenome" required />
+      <label>Telefone</label>
+      <input type="tel" name="telefone" required />
+      <label>CPF</label>
+      <input type="text" name="cpf" required />
+      <label>Trabalha CLT?</label>
+      <div class="radio-group">
+        <label><input type="radio" name="clt" value="Sim" required /> Sim</label>
+        <label><input type="radio" name="clt" value="Não" required /> Não</label>
+      </div>
+      <button type="submit">Enviar</button>
+      <div id="mensagem-status"></div>
+    </form>
+  </div>
+  <script>
+    const form = document.getElementById("meuFormulario");
+    const status = document.getElementById("mensagem-status");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      status.innerText = "Enviando...";
+
+      const formData = new FormData(form);
+      const plainData = Object.fromEntries(formData.entries());
+
+      try {
+        const response = await fetch("/api/proxy", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(plainData),
+        });
+
+        const result = await response.text();
+        status.innerText = "✅ Enviado com sucesso!";
+        form.reset();
+      } catch (err) {
+        console.error(err);
+        status.innerText = "❌ Erro ao enviar. Tente novamente.";
+      }
+    });
+  </script>
+</body>
+</html>
